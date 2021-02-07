@@ -1,19 +1,25 @@
-const controller = require('../../controllers/auth')
+const jwt = require('jsonwebtoken')
+const config = require('../../config/auth')
 const db = require('../../models')
 
 const ROLES = db.ROLES
 
 const verifyToken = (socket, next) => {
     const token = socket.handshake.auth.token
-    controller.verifyToken(token)
-    .then(user => {
+    if (!token) {
+        return next()
+    }
+
+    jwt.verify(token, config.secret, (err, decoded) => {
+        if (err) {
+            return next()
+        }
         socket.user = {
-            id: user.id,
-            isAdmin: user.role.name == ROLES.admin
+            id: decoded.id,
+            isAdmin: decoded.role == ROLES.admin
         }
         next()
     })
-    .catch(next)
 }
 
 module.exports = {

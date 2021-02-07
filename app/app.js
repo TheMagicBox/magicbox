@@ -6,7 +6,6 @@ const server = require('http').createServer(app)
 const io = require('socket.io')(server)
 const bodyParser = require('body-parser')
 const db = require('./models')
-const { verifyToken } = require('./io/middlewares')
 const { initializeDatabase } = require('./initdb')
 
 const mongoHost = process.env.MONGO_HOST
@@ -33,12 +32,10 @@ db.mongoose.connect(url, {
     }
     initializeDatabase()
 
-    io.use(verifyToken)
-    io.on('connection', require('./io/server'))
-
+    require('./io/server')(io)
     app.use(bodyParser.urlencoded({ extended: true }))
     app.use(bodyParser.json())
-    app.use('/api', require('./exp/api'))
+    app.use('/api', require('./exp/routes/api'))
     server.listen(process.env.SERVER_PORT, () => {
         console.log(`Listening at http://localhost:${process.env.SERVER_PORT}`)
     })

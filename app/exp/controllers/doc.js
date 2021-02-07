@@ -1,5 +1,4 @@
 const PrettyTable = require('prettytable')
-
 const doc = (() => {
     const table = new PrettyTable()
     table.create(
@@ -13,4 +12,10 @@ const doc = (() => {
     return table.toString()
 })()
 
-module.exports = { doc }
+const getDoc = (req, res) => {
+    res.send(`<pre>${doc}</pre>`)
+}
+
+module.exports = {
+    getDoc
+}
