@@ -15,34 +15,37 @@ const signUp = (req, res) => {
         return res.status(400).send('Missing parameters: username, password')
     }
 
-    Role.findOne({ name: ROLES.user }, (err, role) => {
-        if (err) {
-            return res.status(500).end()
-        }
-
-        User.findOne({ username }).exec((err, user) => {
+    User.estimatedDocumentCount((err, count) => {
+        const roleName = (err || count > 0) ? ROLES.user : ROLES.admin
+        Role.findOne({ name: roleName }, (err, role) => {
             if (err) {
                 return res.status(500).end()
             }
 
-            if (user) {
-                return res.status(400).send('Username already exists!')
-            }
-
-            new User({
-                username: username,
-                password: bcrypt.hashSync(password, 8),
-                role: role._id
-            })
-            .save((err, user) => {
+            User.findOne({ username }).exec((err, user) => {
                 if (err) {
                     return res.status(500).end()
                 }
 
-                const data = user.toJSON()
-                delete data.password
-                data.role = role.toJSON()
-                res.json(data)
+                if (user) {
+                    return res.status(400).send('Username already exists!')
+                }
+
+                new User({
+                    username: username,
+                    password: bcrypt.hashSync(password, 8),
+                    role: role._id
+                })
+                .save((err, user) => {
+                    if (err) {
+                        return res.status(500).end()
+                    }
+
+                    const data = user.toJSON()
+                    delete data.password
+                    data.role = role.toJSON()
+                    res.json(data)
+                })
             })
         })
     })
