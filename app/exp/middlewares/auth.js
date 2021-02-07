@@ -12,7 +12,7 @@ const verifyToken = (req, res, next) => {
 
     jwt.verify(token, config.secret, (err, decoded) => {
         if (err) {
-            return res.status(400).json('Unauthorized!')
+            return res.status(400).send('Unauthorized!')
         }
         req.user = {
             id: decoded.id,
@@ -24,7 +24,7 @@ const verifyToken = (req, res, next) => {
 
 const isAdmin = (req, res, next) => {
     if (req.user.role !== ROLES.admin) {
-        return res.status(403).json('Reserved for admin!')
+        return res.status(403).send('Reserved for admin!')
     }
     next()
 }
