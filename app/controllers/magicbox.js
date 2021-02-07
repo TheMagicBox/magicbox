@@ -13,7 +13,9 @@ const getMagicBox = (req, res) => {
             return res.status(404).send('MagicBox not registered yet.')
         }
 
-        res.json(magicbox.toJSON())
+        const box = magicbox.toJSON()
+        delete box.default
+        res.json(box)
     })
 }
 
@@ -31,7 +33,9 @@ const registerMagicBox = (req, res) => {
             return res.status(500).end()
         }
 
-        res.json(magicbox.toJSON())
+        const box = magicbox.toJSON()
+        delete box.default
+        res.json(box)
     })
 }
 
