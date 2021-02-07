@@ -9,12 +9,12 @@ router.post('/signup', (req, res) => {
     }
 
     controller.signup(req.body.username, req.body.password)
-        .then(user => {
-            res.json(formatter.success(user))
-        })
-        .catch(err => {
-            res.json(formatter.error(err))
-        })
+    .then(user => {
+        res.json(formatter.success(user))
+    })
+    .catch(err => {
+        res.json(formatter.error(err))
+    })
 })
 
 router.post('/signin', (req, res) => {
@@ -23,12 +23,12 @@ router.post('/signin', (req, res) => {
     }
 
     controller.signin(req.body.username, req.body.password)
-        .then(user => {
-            res.json(formatter.success(user))
-        })
-        .catch(err => {
-            res.json(formatter.error(err))
-        })
+    .then(user => {
+        res.json(formatter.success(user))
+    })
+    .catch(err => {
+        res.json(formatter.error(err))
+    })
 })
 
 module.exports = router

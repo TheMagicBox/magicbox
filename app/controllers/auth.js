@@ -73,7 +73,7 @@ const signin = (username, password) => {
 const verifyToken = token => {
     return new Promise((resolve, reject) => {
         if (!token) {
-            return reject()
+            return reject('No access token provided.')
         }
         jwt.verify(token, config.secret, (err, decoded) => {
             if (err) {
