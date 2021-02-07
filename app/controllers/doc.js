@@ -9,7 +9,10 @@ const doc = (() => {
             ['POST', '/api/auth/signin', 'username: String, password: String', 'None', 'Sign in to an account.'],
             ['GET', '/api/magicbox', '', 'User', 'Get MagicBox details.'],
             ['POST', '/api/magicbox', 'name: String, url: String', 'User', 'Add a MagicBox contact.'],
-            ['POST', '/api/magicbox/register', 'name: String', 'Admin', 'Register MagicBox for a public url.']
+            ['POST', '/api/magicbox/register', 'name: String', 'Admin', 'Register MagicBox for a public url.'],
+            ['GET', '/api/folders', '', 'User', 'Get folders list.'],
+            ['POST', '/api/folders', 'name: String', 'User', 'Create a new folder.'],
+            ['POST', '/api/folders/share', 'folderId: String, magicBoxIds: [String]', 'User', 'Share a folder.']
         ]
     )
     return table.toString()

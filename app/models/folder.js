@@ -6,6 +6,7 @@ const Folder = mongoose.model(
     new mongoose.Schema({
         path: {
             type: String,
+            unique: true,
             required: true
         },
         owner: {

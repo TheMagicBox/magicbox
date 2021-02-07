@@ -7,6 +7,7 @@ const io = require('socket.io')(server)
 const bodyParser = require('body-parser')
 const db = require('./models')
 const { initializeDatabase } = require('./initdb')
+const STORAGE = path.join(process.cwd(), process.env.STORAGE_DIRECTORY)
 
 const mongoHost = process.env.MONGO_HOST
 const mongoPort = process.env.MONGO_PORT
@@ -23,10 +24,10 @@ db.mongoose.connect(url, {
     pass: mongoPassword,
     useCreateIndex: true,
     useNewUrlParser: true,
+    useFindAndModify: true,
     useUnifiedTopology: true
 })
 .then(client => {
-    const STORAGE = path.join(process.cwd(), process.env.STORAGE_DIRECTORY)
     if (!fs.existsSync(STORAGE)) {
         fs.mkdirSync(STORAGE, { recursive: true })
     }
@@ -41,3 +42,7 @@ db.mongoose.connect(url, {
     })
 })
 .catch(console.error)
+
+module.exports = {
+    STORAGE
+}

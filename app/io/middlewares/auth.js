@@ -16,7 +16,8 @@ const verifyToken = (socket, next) => {
         }
         socket.user = {
             id: decoded.id,
-            isAdmin: decoded.role == ROLES.admin
+            isAdmin: decoded.role == ROLES.admin,
+            name: decoded.name
         }
         next()
     })

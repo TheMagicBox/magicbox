@@ -24,7 +24,7 @@ const addMagicBox = (req, res) => {
     const url = req.body.url
 
     if (!name || !url) {
-        return res.status(400).send('Missing parameters: name, url')
+        return res.status(400).send('Missing parameters: name, url.')
     }
 
     new MagicBox({
@@ -44,7 +44,7 @@ const addMagicBox = (req, res) => {
 const registerMagicBox = (req, res) => {
     const name = req.body.name
     if (!name) {
-        return res.status(400).send('Missing parameters: name')
+        return res.status(400).send('Missing parameters: name.')
     }
 
     ngrok.connect(process.env.SERVER_PORT)

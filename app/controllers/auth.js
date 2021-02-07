@@ -12,7 +12,7 @@ const signUp = (req, res) => {
     const password = req.body.password
 
     if (!username || !password) {
-        return res.status(400).send('Missing parameters: username, password')
+        return res.status(400).send('Missing parameters: username, password.')
     }
 
     User.estimatedDocumentCount((err, count) => {
@@ -56,7 +56,7 @@ const signIn = (req, res) => {
     const password = req.body.password
 
     if (!username || !password) {
-        return res.status(400).send('Missing parameters: username, password')
+        return res.status(400).send('Missing parameters: username, password.')
     }
 
     User.findOne({ username }).populate('role').exec((err, user) => {
@@ -74,7 +74,8 @@ const signIn = (req, res) => {
 
         const obj = {
             id: user.id,
-            role: user.role.name
+            role: user.role.name,
+            name: user.username
         }
 
         const token = jwt.sign(obj, config.secret, {
