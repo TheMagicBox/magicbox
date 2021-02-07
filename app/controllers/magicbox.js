@@ -19,6 +19,28 @@ const getMagicBox = (req, res) => {
     })
 }
 
+const addMagicBox = (req, res) => {
+    const name = req.body.name
+    const url = req.body.url
+
+    if (!name || !url) {
+        return res.status(400).send('Missing parameters: name, url')
+    }
+
+    new MagicBox({
+        name,
+        url
+    }).save((err, magicbox) => {
+        if (err) {
+            return res.status(500).end()
+        }
+
+        const box = magicbox.toJSON()
+        delete box.default
+        res.json(box)
+    })
+}
+
 const registerMagicBox = (req, res) => {
     const name = req.body.name
     if (!name) {
@@ -48,5 +70,6 @@ const registerMagicBox = (req, res) => {
 
 module.exports = {
     getMagicBox,
+    addMagicBox,
     registerMagicBox
 }

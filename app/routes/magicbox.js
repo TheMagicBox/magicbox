@@ -5,6 +5,7 @@ const { isMagicBoxRegistered } = require('../middlewares/magicbox')
 const router = express.Router()
 
 router.get('/', [verifyToken], controller.getMagicBox)
+router.post('/', [verifyToken], controller.addMagicBox)
 router.post(
     '/register',
     [verifyToken, isAdmin, isMagicBoxRegistered],

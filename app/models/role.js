@@ -4,7 +4,11 @@ const { toJSON } = require('./helper')
 const Role = mongoose.model(
     'Role',
     new mongoose.Schema({
-        name: String
+        name: {
+            type: String,
+            unique: true,
+            required: true
+        }
     }, { toJSON })
 )
 

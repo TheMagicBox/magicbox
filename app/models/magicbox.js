@@ -5,7 +5,11 @@ const MagicBox = mongoose.model(
     'MagicBox',
     new mongoose.Schema({
         name: String,
-        url: String,
+        url: {
+            type: String,
+            unique: true,
+            required: true
+        },
         default: {
             type: Boolean,
             default: false
