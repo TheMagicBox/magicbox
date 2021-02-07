@@ -15,7 +15,7 @@ const Folder = mongoose.model(
         },
         sharedWith: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Box'
+            ref: 'MagicBox'
         }]
     }, { toJSON })
 )
