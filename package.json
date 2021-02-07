@@ -1,0 +1,26 @@
+{
+    "name": "client",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app/app.js",
+    "scripts": {
+        "start-mongo": "docker run --rm -d --name magicbox_mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=magicbox -e MONGO_INITDB_ROOT_PASSWORD=xobcigam mongo",
+        "stop-mongo": "docker stop magicbox_mongo",
+        "start-node": "./node_modules/nodemon/bin/nodemon.js app/app.js",
+        "start": "npm run start-mongo && npm run start-node"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "dotenv": "^8.2.0",
+        "jsonwebtoken": "^8.5.1",
+        "mongodb": "^3.6.4",
+        "mongoose": "^5.11.15",
+        "nanoid": "^3.1.20",
+        "nodemon": "^2.0.7",
+        "path": "^0.12.7",
+        "socket.io": "^3.0.5",
+        "socket.io-client": "^3.0.5"
+    }
+}
