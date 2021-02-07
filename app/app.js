@@ -22,6 +22,7 @@ db.mongoose.connect(url, {
     },
     user: mongoUsername,
     pass: mongoPassword,
+    useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true
 })

@@ -1,24 +1,23 @@
 const mongoose = require('mongoose')
 const { toJSON } = require('./helper')
 
-const User = mongoose.model(
-    'User',
+const Folder = mongoose.model(
+    'Folder',
     new mongoose.Schema({
-        username: {
+        path: {
             type: String,
-            unique: true,
             required: true
         },
-        password: {
-            type: String,
-            unique: true,
-            required: true
-        },
-        role: {
+        owner: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Role'
-        }
+            ref: 'User',
+            required: true
+        },
+        sharedWith: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Box'
+        }]
     }, { toJSON })
 )
 
-module.exports = User
+module.exports = Folder
