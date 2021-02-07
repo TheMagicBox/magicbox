@@ -7,7 +7,7 @@ const User = db.User
 const Role = db.Role
 const ROLES = db.ROLES
 
-const register = (username, password) => {
+const signup = (username, password) => {
     return new Promise((resolve, reject) => {
         Role.findOne({ name: ROLES.user }, (err, role) => {
             if (err) {
@@ -43,7 +43,7 @@ const register = (username, password) => {
     })
 }
 
-const login = (username, password) => {
+const signin = (username, password) => {
     return new Promise((resolve, reject) => {
         User.findOne({ username }).populate('role').exec((err, user) => {
             if (err) {
@@ -97,7 +97,7 @@ const verifyToken = token => {
 }
 
 module.exports = {
-    register,
-    login,
+    signup,
+    signin,
     verifyToken
 }
