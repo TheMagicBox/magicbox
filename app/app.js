@@ -35,7 +35,7 @@ db.mongoose.connect(url, {
     require('./io/server')(io)
     app.use(bodyParser.urlencoded({ extended: true }))
     app.use(bodyParser.json())
-    app.use('/api', require('./exp/routes/api'))
+    app.use('/api', require('./routes/api'))
     server.listen(process.env.SERVER_PORT, () => {
         console.log(`Listening at http://localhost:${process.env.SERVER_PORT}`)
     })

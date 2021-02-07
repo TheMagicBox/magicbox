@@ -1,5 +1,5 @@
 const ngrok = require('ngrok')
-const db = require('../../models')
+const db = require('../models')
 
 const MagicBox = db.MagicBox
 
