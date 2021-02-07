@@ -43,6 +43,7 @@ const addMagicBox = (req, res) => {
 
 const registerMagicBox = (req, res) => {
     const name = req.body.name
+
     if (!name) {
         return res.status(400).send('Missing parameters: name.')
     }
