@@ -2,7 +2,7 @@ const db = require('../models')
 
 const MagicBox = db.MagicBox
 
-const isMagicBoxRegistered = (req, res, next) => {
+const magicBoxNotRegistered = (req, res, next) => {
     MagicBox.findOne({ default: true }, (err, magicbox) => {
         if (err) {
             return res.status(500).end()
@@ -17,5 +17,5 @@ const isMagicBoxRegistered = (req, res, next) => {
 }
 
 module.exports = {
-    isMagicBoxRegistered
+    magicBoxNotRegistered
 }
