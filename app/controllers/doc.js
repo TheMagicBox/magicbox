@@ -11,6 +11,7 @@ const doc = (() => {
             ['POST', '/api/magicbox', 'name: String, url: String', 'User', 'Add a MagicBox contact.'],
             ['POST', '/api/magicbox/register', 'name: String', 'Admin', 'Register MagicBox for a public url.'],
             ['GET', '/api/folders', '', 'User', 'Get folders list.'],
+            ['GET', '/api/folders/:folderId', '', 'User', 'Get folder content.'],
             ['POST', '/api/folders', 'name: String', 'User', 'Create a new folder.'],
             ['POST', '/api/folders/share', 'folderId: String, magicBoxIds: [String]', 'User', 'Share a folder.']
         ]
