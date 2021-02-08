@@ -6,7 +6,7 @@ const { STORAGE } = require('../app')
 const Folder = db.Folder
 
 const getFolders = (req, res) => {
-    Folder.find({})
+    Folder.find({ owner: req.user.id })
     .populate({
         path: 'owner',
         populate: [{ path: 'role' }]
