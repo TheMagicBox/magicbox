@@ -24,11 +24,12 @@ const helper = {
 }
 
 const shareFile = (socket, folder, filepath) => {
-    const progress = Object.fromEntries(folder.sharedWith.map(magicbox => {
-        return [magicbox._id, 0]
+    const progress = Object.fromEntries(folder.sharedWith.map(recipient => {
+        return [recipient.magicbox._id, 0]
     }))
 
-    folder.sharedWith.forEach(magicbox => {
+    folder.sharedWith.forEach(recipient => {
+        const { magicbox, folderId } = recipient
         const client = ioClient(magicbox.url)
         client.on('connect', () => {
             client.on('upload', result => {
@@ -48,7 +49,7 @@ const shareFile = (socket, folder, filepath) => {
                     filename: path.basename(filepath)
                 })
             })
-            siof(client).emit('upload', folder._id)
+            siof(client).emit('upload', folderId)
         })
     })
 }
@@ -57,7 +58,10 @@ module.exports = io => {
     io.use(verifyToken)
     io.on('connection', socket => {
         socket.on('upload', folderId => {
-            Folder.findById(folderId, (err, folder) => {
+            const isUserLogged = socket.user != null
+            const query = isUserLogged ? { _id: folderId } : { 'sharedWith.folderId': folderId }
+
+            Folder.findOne(query, (err, folder) => {
                 if (err) {
                     return socket.emit('upload', helper.error())
                 }
@@ -66,7 +70,7 @@ module.exports = io => {
                     return socket.emit('upload', helper.error('Folder not found.'))
                 }
 
-                if (folder.owner._id != socket.user.id) {
+                if (isUserLogged && socket.user.id != folder.owner._id) {
                     return socket.emit('upload', helper.error('You are not the owner of that folder.'))
                 }
 
@@ -83,7 +87,7 @@ module.exports = io => {
                     socket.removeAllListeners(keyOn)
                     socket.removeAllListeners(keyOff)
 
-                    if (socket.user) {
+                    if (isUserLogged) {
                         const filepath = path.join(destination, metadata.filename)
                         shareFile(socket, folder, filepath)
                     }
