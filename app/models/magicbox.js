@@ -10,9 +10,10 @@ const MagicBox = mongoose.model(
             unique: true,
             required: true
         },
-        default: {
-            type: Boolean,
-            default: false
+        default: Boolean,
+        account: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
         }
     }, { toJSON })
 )

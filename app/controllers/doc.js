@@ -5,9 +5,10 @@ const doc = (() => {
         ['Method', 'Path', 'Parameters', 'Authentication', 'Description'],
         [
             ['GET', '/api', '', 'None', 'Get the API documentation.'],
-            ['POST', '/api/auth/signup', 'username: String, password: String', 'None', 'Create an account.'],
+            ['POST', '/api/auth/signup', 'username: String, password: String', 'Admin', 'Create an account.'],
             ['POST', '/api/auth/signin', 'username: String, password: String', 'None', 'Sign in to an account.'],
             ['GET', '/api/magicbox', '', 'User', 'Get MagicBox details.'],
+            ['GET', '/api/magicbox/contacts', '', 'User', 'Get MagicBox contacts.'],
             ['POST', '/api/magicbox', 'name: String, url: String', 'User', 'Add a MagicBox contact.'],
             ['POST', '/api/magicbox/register', 'name: String', 'Admin', 'Register MagicBox for a public url.'],
             ['GET', '/api/folders', '', 'User', 'Get folders list.'],

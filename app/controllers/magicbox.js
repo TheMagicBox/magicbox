@@ -19,6 +19,17 @@ const getMagicBox = (req, res) => {
     })
 }
 
+const getMagicBoxContacts = (req, res) => {
+    MagicBox.find({ $in: { account: req.user.id } }, (err, magicboxes) => {
+        if (err) {
+            return res.status(500).end()
+        }
+
+        const boxes = magicboxes.map(magicbox => magicbox.toJSON())
+        res.json(boxes)
+    })
+}
+
 const addMagicBox = (req, res) => {
     const name = req.body.name
     const url = req.body.url
@@ -29,14 +40,14 @@ const addMagicBox = (req, res) => {
 
     new MagicBox({
         name,
-        url
+        url,
+        account: req.user.id
     }).save((err, magicbox) => {
         if (err) {
             return res.status(500).end()
         }
 
         const box = magicbox.toJSON()
-        delete box.default
         res.json(box)
     })
 }
@@ -71,6 +82,7 @@ const registerMagicBox = (req, res) => {
 
 module.exports = {
     getMagicBox,
+    getMagicBoxContacts,
     addMagicBox,
     registerMagicBox
 }
