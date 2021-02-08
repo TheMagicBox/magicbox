@@ -20,7 +20,7 @@ const getMagicBox = (req, res) => {
 }
 
 const getMagicBoxContacts = (req, res) => {
-    MagicBox.find({ $in: { account: req.user.id } }, (err, magicboxes) => {
+    MagicBox.find({ account: req.user.id }, (err, magicboxes) => {
         if (err) {
             return res.status(500).end()
         }
