@@ -74,7 +74,7 @@ const shareFolder = (req, res) => {
     }
 
     Folder.findByIdAndUpdate(folderId, {
-        $push: { sharedWith: { $each: magicBoxIds } }
+        $addToSet: { sharedWith: { $each: magicBoxIds } }
     }, { new: true }, (err, folder) => {
         if (err) {
             return res.status(500).end()

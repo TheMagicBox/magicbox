@@ -24,7 +24,7 @@ db.mongoose.connect(url, {
     pass: mongoPassword,
     useCreateIndex: true,
     useNewUrlParser: true,
-    useFindAndModify: true,
+    useFindAndModify: false,
     useUnifiedTopology: true
 })
 .then(client => {
