@@ -67,14 +67,14 @@ const createFolder = (req, res) => {
 
 const shareFolder = (req, res) => {
     const folderId = req.params.folderId
-    const magicBoxIds = req.body.magicBoxIds
+    const magicboxIds = req.body.magicboxIds
 
-    if (!magicBoxIds) {
-        return res.status(400).send('Missing parameters: magicBoxIds.')
+    if (!magicboxIds) {
+        return res.status(400).send('Missing parameters: magicboxIds.')
     }
 
     Folder.findByIdAndUpdate(folderId, {
-        $addToSet: { sharedWith: { $each: magicBoxIds } }
+        $addToSet: { sharedWith: { $each: magicboxIds } }
     }, { new: true }, (err, folder) => {
         if (err) {
             return res.status(500).end()
