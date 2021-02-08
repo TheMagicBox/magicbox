@@ -3,7 +3,7 @@ const db = require('../models')
 const Folder = db.Folder
 
 const isFolderOwner = (req, res, next) => {
-    const folderId = req.body.folderId || req.params.folderId
+    const folderId = req.params.folderId
     Folder.findById(folderId)
     .populate('owner')
     .exec((err, folder) => {
