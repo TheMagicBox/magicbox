@@ -28,6 +28,18 @@ const getFolders = (req, res) => {
     })
 }
 
+const getFolderContent = (req, res) => {
+    const folderId = req.params.folderId
+
+    if (!folderId) {
+        return res.status(400).send('Missing parameters: folderId.')
+    }
+
+    const directory = path.join(STORAGE, req.folder.path)
+    const content = fs.readdirSync(directory)
+    res.json(content)
+}
+
 const createFolder = (req, res) => {
     const name = req.body.name
 
@@ -78,6 +90,7 @@ const shareFolder = (req, res) => {
 
 module.exports = {
     getFolders,
+    getFolderContent,
     createFolder,
     shareFolder
 }

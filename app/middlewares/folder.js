@@ -3,7 +3,7 @@ const db = require('../models')
 const Folder = db.Folder
 
 const isFolderOwner = (req, res, next) => {
-    const folderId = req.body.folderId
+    const folderId = req.body.folderId || req.params.folderId
     Folder.findById(folderId)
     .populate('owner')
     .exec((err, folder) => {
@@ -19,6 +19,7 @@ const isFolderOwner = (req, res, next) => {
             return res.status(401).send('You are not the owner of this folder.')
         }
 
+        req.folder = folder.toJSON()
         next()
     })
 }

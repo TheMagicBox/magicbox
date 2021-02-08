@@ -5,6 +5,7 @@ const { isFolderOwner } = require('../middlewares/folder')
 const router = express.Router()
 
 router.get('/', [verifyToken], controller.getFolders)
+router.get('/:folderId', [verifyToken, isFolderOwner], controller.getFolderContent)
 router.post('/', [verifyToken], controller.createFolder)
 router.post('/share', [verifyToken, isFolderOwner], controller.shareFolder)
 
