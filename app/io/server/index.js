@@ -26,7 +26,7 @@ const helper = {
 const shareFile = (socket, folder, filepath) => {
     const progress = folder.sharedWith.map(recipient => {
         return {
-            magicbox: recipient.magicbox,
+            magicbox: recipient.magicbox._id,
             status: 0
         }
     })
@@ -61,7 +61,14 @@ module.exports = io => {
     io.use(verifyToken)
     io.on('connection', socket => {
         socket.on('upload', folderId => {
-            Folder.findById(folderId, (err, folder) => {
+            Folder.findById(folderId)
+            .populate({
+                path: 'sharedWith',
+                populate: {
+                    path: 'magicbox'
+                }
+            })
+            .exec((err, folder) => {
                 if (err) {
                     return socket.emit('upload', helper.error())
                 }
