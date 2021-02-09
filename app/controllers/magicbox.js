@@ -44,7 +44,7 @@ const addMagicBox = (req, res) => {
         if (response.ok) {
             return response
         }
-        throw Error(res.statusText)
+        throw response
     })
     .then(response => response.json())
     .then(response => {
@@ -62,8 +62,10 @@ const addMagicBox = (req, res) => {
             res.json(magicbox.toJSON())
         })
     })
-    .catch(err => {
-        res.status(500).send(err)
+    .catch(response => {
+        response.text().then(message => {
+            res.status(response.status).send(message)
+        })
     })
 }
 
@@ -74,7 +76,8 @@ const registerMagicBox = (req, res) => {
         return res.status(400).send('Missing parameters: name.')
     }
 
-    ngrok.connect(process.env.SERVER_PORT)
+    // ngrok.connect(process.env.SERVER_PORT)
+    Promise.resolve('http://56338e0c2ece.ngrok.io')
     .then(url => {
         new MagicBox({
             name,
