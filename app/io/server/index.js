@@ -58,7 +58,10 @@ module.exports = io => {
     io.use(verifyToken)
     io.on('connection', socket => {
         socket.on('upload', folderId => {
-            Folder.findById(folderId, (err, folder) => {
+            const isUserLogged = socket.user != null
+            const query = isUserLogged ? { _id: folderId } : { 'sharedWith.folderId': folderId }
+
+            Folder.findOne(query, (err, folder) => {
                 if (err) {
                     return socket.emit('upload', helper.error())
                 }
@@ -67,7 +70,7 @@ module.exports = io => {
                     return socket.emit('upload', helper.error('Folder not found.'))
                 }
 
-                if (socket.user && socket.user.id != folder.owner._id) {
+                if (isUserLogged && socket.user.id != folder.owner._id) {
                     return socket.emit('upload', helper.error('You are not the owner of that folder.'))
                 }
 
@@ -84,7 +87,7 @@ module.exports = io => {
                     socket.removeAllListeners(keyOn)
                     socket.removeAllListeners(keyOff)
 
-                    if (socket.user) {
+                    if (isUserLogged) {
                         const filepath = path.join(destination, metadata.filename)
                         shareFile(socket, folder, filepath)
                     }
