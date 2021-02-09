@@ -19,7 +19,7 @@ const Folder = mongoose.model(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'MagicBox'
             },
-            folderId: mongoose.Schema.Types.ObjectId
+            folderId: String
         }]
     }, { toJSON })
 )

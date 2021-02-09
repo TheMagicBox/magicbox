@@ -85,11 +85,12 @@ const createFolderForSharing = (req, res) => {
             return res.status(404).send('You are not in this MagicBox contacts.')
         }
 
-        if (!verify(data, signature, magicbox.publicKey)) {
+        const signatureBuffer = Buffer.from(signature, 'base64')
+        if (!verify(data, signatureBuffer, magicbox.publicKey)) {
             return res.status(401).send('Your signature doesn\'t match the MagicBox owner\'s.')
         }
 
-        const subDirectory = path.join(magicbox.addedBy.name, name)
+        const subDirectory = path.join(magicbox.addedBy.username, name)
         const directory = path.join(STORAGE, subDirectory)
         if (fs.existsSync(directory)) {
             return res.status(400).send('Folder already exists.')
@@ -107,7 +108,7 @@ const createFolderForSharing = (req, res) => {
             if (err) {
                 return res.status(500).end()
             }
-            res.json(folder.toJSON())
+            res.json({ folderId: folder._id })
         })
     })
 }
@@ -144,10 +145,13 @@ const shareFolder = (req, res) => {
                 return sign(origin).then(signature => {
                     const options = {
                         method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify({
                             name: path.basename(folder.path),
-                            origin,
-                            signature
+                            origin: origin,
+                            signature: signature.toString('base64')
                         })
                     }
 
@@ -156,7 +160,7 @@ const shareFolder = (req, res) => {
                         if (response.ok) {
                             return response
                         }
-                        throw Error(response.statusText)
+                        throw response
                     })
                     .then(response => response.json())
                     .then(response => {
@@ -175,8 +179,10 @@ const shareFolder = (req, res) => {
                 }).catch(err => {
                     res.status(500).end()
                 })
-            }).catch(err => {
-                res.status(500).end()
+            }).catch(response => {
+                response.text().then(message => {
+                    res.status(response.status).send(message)
+                })
             })
         })
     })
