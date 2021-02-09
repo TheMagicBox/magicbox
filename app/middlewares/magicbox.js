@@ -16,6 +16,22 @@ const magicBoxNotRegistered = (req, res, next) => {
     })
 }
 
+const isMagicBoxRegistered = (req, res, next) => {
+    MagicBox.findOne({ default: true }, (err, magicbox) => {
+        if (err) {
+            return res.status(500).end()
+        }
+
+        if (!magicbox) {
+            return res.status(400).send('MagicBox not registered.')
+        }
+
+        req.magicbox = magicbox.toJSON()
+        next()
+    })
+}
+
 module.exports = {
-    magicBoxNotRegistered
+    magicBoxNotRegistered,
+    isMagicBoxRegistered
 }

@@ -5,16 +5,14 @@ const MagicBox = mongoose.model(
     'MagicBox',
     new mongoose.Schema({
         name: String,
-        url: {
-            type: String,
-            unique: true,
-            required: true
-        },
-        default: Boolean,
-        account: {
+        url: String,
+        account: mongoose.Schema.Types.ObjectId,
+        addedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
-        }
+        },
+        publicKey: String,
+        default: Boolean
     }, { toJSON })
 )
 

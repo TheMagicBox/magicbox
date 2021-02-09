@@ -1,4 +1,5 @@
 const ngrok = require('ngrok')
+const fetch = require('node-fetch')
 const db = require('../models')
 
 const MagicBox = db.MagicBox
@@ -20,35 +21,49 @@ const getMagicBox = (req, res) => {
 }
 
 const getMagicBoxContacts = (req, res) => {
-    MagicBox.find({ account: req.user.id }, (err, magicboxes) => {
+    MagicBox.find({ addedBy: req.user.id }, (err, magicboxes) => {
         if (err) {
             return res.status(500).end()
         }
 
-        const boxes = magicboxes.map(magicbox => magicbox.toJSON())
-        res.json(boxes)
+        res.json(magicboxes.map(magicbox => magicbox.toJSON()))
     })
 }
 
 const addMagicBox = (req, res) => {
     const name = req.body.name
     const url = req.body.url
+    const account = req.body.account
 
     if (!name || !url) {
-        return res.status(400).send('Missing parameters: name, url.')
+        return res.status(400).send('Missing parameters: name, url, account.')
     }
 
-    new MagicBox({
-        name,
-        url,
-        account: req.user.id
-    }).save((err, magicbox) => {
-        if (err) {
-            return res.status(500).end()
+    fetch(`${url}/api/users/${account}`)
+    .then(response => {
+        if (response.ok) {
+            return response
         }
+        throw Error(res.statusText)
+    })
+    .then(response => response.json())
+    .then(response => {
+        new MagicBox({
+            name,
+            url,
+            account: response.userId,
+            addedBy: req.user.id,
+            publicKey: response.publicKey
+        }).save((err, magicbox) => {
+            if (err) {
+                return res.status(500).end()
+            }
 
-        const box = magicbox.toJSON()
-        res.json(box)
+            res.json(magicbox.toJSON())
+        })
+    })
+    .catch(err => {
+        res.status(500).send(err)
     })
 }
 
@@ -76,7 +91,7 @@ const registerMagicBox = (req, res) => {
         })
     })
     .catch(err => {
-        return res.status(500).end()
+        return res.status(500).send(err)
     })
 }
 
