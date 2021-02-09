@@ -24,23 +24,26 @@ const helper = {
 }
 
 const shareFile = (socket, folder, filepath) => {
-    const progress = Object.fromEntries(folder.sharedWith.map(recipient => {
-        return [recipient.magicbox._id, 0]
-    }))
+    const progress = folder.sharedWith.map(recipient => {
+        return {
+            magicbox: recipient.magicbox,
+            status: 0
+        }
+    })
 
-    folder.sharedWith.forEach(recipient => {
+    folder.sharedWith.forEach((recipient, index) => {
         const { magicbox, folderId } = recipient
         const client = ioClient(magicbox.url)
         client.on('connect', () => {
             client.on('upload', result => {
                 if (result.status == 'error') {
-                    progress[magicbox._id] = -1
+                    progress[index].status = -1
                     return socket.emit('share', helper.success(progress))
                 }
 
                 const { keyOn, keyOff } = result.data
                 client.on(keyOn, result => {
-                    progress[magicbox._id] = 1
+                    progress[index].status = 1
                     socket.emit('share', helper.success(progress))
                     client.removeAllListeners(keyOn)
                     client.close()
@@ -49,7 +52,7 @@ const shareFile = (socket, folder, filepath) => {
                     filename: path.basename(filepath)
                 })
             })
-            siof(client).emit('upload', folderId)
+            client.emit('upload', folderId)
         })
     })
 }
@@ -58,10 +61,7 @@ module.exports = io => {
     io.use(verifyToken)
     io.on('connection', socket => {
         socket.on('upload', folderId => {
-            const isUserLogged = socket.user != null
-            const query = isUserLogged ? { _id: folderId } : { 'sharedWith.folderId': folderId }
-
-            Folder.findOne(query, (err, folder) => {
+            Folder.findById(folderId, (err, folder) => {
                 if (err) {
                     return socket.emit('upload', helper.error())
                 }
@@ -70,14 +70,16 @@ module.exports = io => {
                     return socket.emit('upload', helper.error('Folder not found.'))
                 }
 
-                if (isUserLogged && socket.user.id != folder.owner._id) {
-                    return socket.emit('upload', helper.error('You are not the owner of that folder.'))
+                if (socket.user) {
+                    if (socket.user.id != folder.owner._id) {
+                        return socket.emit('upload', helper.error('You are not the owner of that folder.'))
+                    }
+                } else {
+                    // const sender = '...'
+                    // if (!folder.sharedWith.find(magicbox => magicbox.url == sender)) {
+                    //     return socket.emit('share', helper.error('You don\'t have access to that folder.'))
+                    // }
                 }
-
-                // const sender = '...'
-                // if (!folder.sharedWith.find(magicbox => magicbox.url == sender)) {
-                //     return socket.emit('share', helper.error('You don\'t have access to that folder.'))
-                // }
 
                 const keyOn = nanoid(5)
                 const keyOff = `${keyOn}-off`
@@ -87,7 +89,7 @@ module.exports = io => {
                     socket.removeAllListeners(keyOn)
                     socket.removeAllListeners(keyOff)
 
-                    if (isUserLogged) {
+                    if (socket.user) {
                         const filepath = path.join(destination, metadata.filename)
                         shareFile(socket, folder, filepath)
                     }
