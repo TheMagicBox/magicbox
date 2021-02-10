@@ -26,7 +26,10 @@ const isMagicBoxRegistered = (req, res, next) => {
             return res.status(400).send('MagicBox not registered.')
         }
 
-        req.magicbox = magicbox.toJSON()
+        if (!req.user) {
+            req.user = {}
+        }
+        req.user.magicbox = magicbox.toJSON()
         next()
     })
 }

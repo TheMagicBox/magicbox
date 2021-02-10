@@ -137,7 +137,7 @@ const shareFolder = (req, res) => {
 
             const promises = magicboxes.map(magicbox => {
                 const origin = {
-                    url: req.magicbox.url,
+                    url: req.user.magicbox.url,
                     account: req.user.id,
                     folderId: folder._id
                 }
