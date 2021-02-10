@@ -54,6 +54,9 @@ const shareFile = (socket, folder, filepath) => {
             })
             client.emit('upload', folderId)
         })
+        client.on('disconnect', () => {
+            console.log(`Disconnected from ${magicbox.name}.`);
+        })
     })
 }
 
