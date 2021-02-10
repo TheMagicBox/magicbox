@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const fetch = require('node-fetch')
 const db = require('../models')
-const { sign, verify } = require('../services/keys')
+const { sign } = require('../services/keys')
 const { STORAGE } = require('../app')
 
 const Folder = db.Folder
@@ -67,49 +67,30 @@ const createFolder = (req, res) => {
 
 const createFolderForSharing = (req, res) => {
     const name = req.body.name
-    const origin = req.body.origin
-    const signature = req.body.signature
 
-    if (!name || !origin || !signature) {
-        return res.status(400).send('Missing parameters: name, origin, signature.')
+    if (!name) {
+        return res.status(400).send('Missing parameters: name.')
     }
 
-    MagicBox.findOne({ url: origin.url, account: origin.account })
-    .populate('addedBy')
-    .exec((err, magicbox) => {
+    const subDirectory = path.join(req.magicbox.addedBy.username, name)
+    const directory = path.join(STORAGE, subDirectory)
+    if (fs.existsSync(directory)) {
+        return res.status(400).send('Folder already exists.')
+    }
+    fs.mkdirSync(directory, { recursive: true })
+
+    new Folder({
+        path: subDirectory,
+        owner: req.magicbox.addedBy._id,
+        sharedWith: [{
+            magicbox: req.magicbox._id,
+            folderId: req.payload.folderId
+        }]
+    }).save((err, folder) => {
         if (err) {
             return res.status(500).end()
         }
-
-        if (!magicbox) {
-            return res.status(404).send('You are not in this MagicBox contacts.')
-        }
-
-        const signatureBuffer = Buffer.from(signature, 'base64')
-        if (!verify(origin, signatureBuffer, magicbox.publicKey)) {
-            return res.status(401).send('Your signature doesn\'t match the MagicBox owner\'s.')
-        }
-
-        const subDirectory = path.join(magicbox.addedBy.username, name)
-        const directory = path.join(STORAGE, subDirectory)
-        if (fs.existsSync(directory)) {
-            return res.status(400).send('Folder already exists.')
-        }
-        fs.mkdirSync(directory, { recursive: true })
-
-        new Folder({
-            path: subDirectory,
-            owner: magicbox.addedBy._id,
-            sharedWith: [{
-                magicbox: magicbox._id,
-                folderId: origin.folderId
-            }]
-        }).save((err, folder) => {
-            if (err) {
-                return res.status(500).end()
-            }
-            res.json({ folderId: folder._id })
-        })
+        res.json({ folderId: folder._id })
     })
 }
 
@@ -141,16 +122,18 @@ const shareFolder = (req, res) => {
                     account: req.user.id,
                     folderId: folder._id
                 }
+                const originEncoded = Buffer.from(JSON.stringify(origin)).toString('base64')
+                const signature = sign(origin).toString('base64')
+                const signatureToken = `${originEncoded}.${signature}`
 
                 const options = {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'x-signature-token': signatureToken
                     },
                     body: JSON.stringify({
-                        name: path.basename(folder.path),
-                        origin: origin,
-                        signature: sign(origin).toString('base64')
+                        name: path.basename(folder.path)
                     })
                 }
 
