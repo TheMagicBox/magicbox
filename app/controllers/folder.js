@@ -86,7 +86,7 @@ const createFolderForSharing = (req, res) => {
         }
 
         const signatureBuffer = Buffer.from(signature, 'base64')
-        if (!verify(data, signatureBuffer, magicbox.publicKey)) {
+        if (!verify(origin, signatureBuffer, magicbox.publicKey)) {
             return res.status(401).send('Your signature doesn\'t match the MagicBox owner\'s.')
         }
 
