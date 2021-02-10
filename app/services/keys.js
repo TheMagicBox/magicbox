@@ -22,7 +22,14 @@ const verify = (data, signature, publicKey) => {
     }, signature)
 }
 
+const genSignToken = payload => {
+    const encoded = Buffer.from(JSON.stringify(payload)).toString('base64')
+    const signature = sign(payload).toString('base64')
+    return `${encoded}.${signature}`
+}
+
 module.exports = {
     sign,
-    verify
+    verify,
+    genSignToken
 }

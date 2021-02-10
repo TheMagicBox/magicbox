@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const fetch = require('node-fetch')
 const db = require('../models')
-const { sign } = require('../services/keys')
+const { sign, genSignToken } = require('../services/keys')
 const { STORAGE } = require('../app')
 
 const Folder = db.Folder
@@ -81,9 +81,9 @@ const createFolderForSharing = (req, res) => {
 
     new Folder({
         path: subDirectory,
-        owner: req.magicbox.addedBy._id,
+        owner: req.magicbox.addedBy.id,
         sharedWith: [{
-            magicbox: req.magicbox._id,
+            magicbox: req.magicbox.id,
             folderId: req.payload.folderId
         }]
     }).save((err, folder) => {
@@ -117,20 +117,15 @@ const shareFolder = (req, res) => {
             }
 
             const promises = magicboxes.map(magicbox => {
-                const origin = {
-                    url: req.user.magicbox.url,
-                    account: req.user.id,
-                    folderId: folder._id
-                }
-                const originEncoded = Buffer.from(JSON.stringify(origin)).toString('base64')
-                const signature = sign(origin).toString('base64')
-                const signatureToken = `${originEncoded}.${signature}`
-
                 const options = {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-signature-token': signatureToken
+                        'x-signature-token': genSignToken({
+                            url: req.user.magicbox.url,
+                            account: req.user.id,
+                            folderId: folder._id
+                        })
                     },
                     body: JSON.stringify({
                         name: path.basename(folder.path)
