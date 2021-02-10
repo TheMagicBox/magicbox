@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const config = require('../../config/auth')
+const keys = require('../../keys')
 const db = require('../../models')
 
 const ROLES = db.ROLES
@@ -10,7 +10,7 @@ const verifyToken = (socket, next) => {
         return next()
     }
 
-    jwt.verify(token, config.secret, (err, decoded) => {
+    jwt.verify(token, keys.jwtSecret, (err, decoded) => {
         if (err) {
             return next()
         }

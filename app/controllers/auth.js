@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const config = require('../config/auth')
+const keys = require('../keys')
 const db = require('../models')
 
 const User = db.User
@@ -78,7 +78,7 @@ const signIn = (req, res) => {
             name: user.username
         }
 
-        const token = jwt.sign(obj, config.secret, {
+        const token = jwt.sign(obj, keys.jwtSecret, {
             expiresIn: 60 * 60 * 24 * 30
         })
 
