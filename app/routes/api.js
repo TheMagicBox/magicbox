@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 router.use('/', require('./doc'))
+router.use('/cert', require('./cert'))
 router.use('/auth', require('./auth'))
 router.use('/users', require('./user'))
 router.use('/magicbox', require('./magicbox'))

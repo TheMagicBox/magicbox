@@ -10,8 +10,8 @@ let publicKey = null
 let privateKey = null
 
 if (fs.existsSync(publicKeyFilepath) && fs.existsSync(privateKeyFilepath)) {
-    publicKey = fs.readFileSync(publicKeyFilepath)
-    privateKey = fs.readFileSync(privateKeyFilepath)
+    publicKey = fs.readFileSync(publicKeyFilepath, 'utf-8')
+    privateKey = fs.readFileSync(privateKeyFilepath, 'utf-8')
 } else {
     const keys = crypto.generateKeyPairSync('rsa', {
         modulusLength: 2048,

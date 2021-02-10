@@ -1,5 +1,4 @@
 const db = require('../models')
-const keys = require('../keys')
 
 const User = db.User
 
@@ -17,7 +16,7 @@ const getUser = (req, res) => {
     })
 }
 
-const getUserInformationFromName = (req, res) => {
+const getUserIdFromName = (req, res) => {
     const username = req.params.username
 
     if (!username) {
@@ -35,13 +34,12 @@ const getUserInformationFromName = (req, res) => {
 
         res.json({
             username,
-            userId: user._id,
-            publicKey: keys.publicKey
+            userId: user._id
         })
     })
 }
 
 module.exports = {
     getUser,
-    getUserInformationFromName
+    getUserIdFromName
 }

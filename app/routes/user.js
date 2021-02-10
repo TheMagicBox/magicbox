@@ -4,6 +4,6 @@ const { verifyToken } = require('../middlewares/auth')
 const router = express.Router()
 
 router.get('/', [verifyToken], controller.getUser)
-router.get('/:username', controller.getUserInformationFromName)
+router.get('/:username', controller.getUserIdFromName)
 
 module.exports = router

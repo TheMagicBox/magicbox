@@ -39,21 +39,26 @@ const addMagicBox = (req, res) => {
         return res.status(400).send('Missing parameters: name, url, account.')
     }
 
-    fetch(`${url}/api/users/${account}`)
-    .then(response => {
+    const okJsonOrThrow = response => {
         if (response.ok) {
-            return response
+            return response.json()
         }
         throw response
-    })
-    .then(response => response.json())
-    .then(response => {
+    }
+
+    Promise.all([
+        fetch(`${url}/api/cert`).then(okJsonOrThrow),
+        fetch(`${url}/api/users/${account}`).then(okJsonOrThrow)
+    ]).then(responses => {
+        const { publicKey } = responses[0]
+        const { userId } = responses[1]
+
         new MagicBox({
             name,
             url,
-            account: response.userId,
-            addedBy: req.user.id,
-            publicKey: response.publicKey
+            publicKey,
+            account: userId,
+            addedBy: req.user.id
         }).save((err, magicbox) => {
             if (err) {
                 return res.status(500).end()
