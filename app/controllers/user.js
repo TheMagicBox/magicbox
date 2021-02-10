@@ -1,5 +1,5 @@
-const { getKeys } = require('../services/keys')
 const db = require('../models')
+const keys = require('../keys')
 
 const User = db.User
 
@@ -33,13 +33,11 @@ const getUserInformationFromName = (req, res) => {
             return res.status(404).send('User not found.')
         }
 
-        getKeys().then(keys => {
-            res.json({
-                username,
-                userId: user._id,
-                publicKey: keys.publicKey
-            })
-        }).catch(err => res.status(500).end())
+        res.json({
+            username,
+            userId: user._id,
+            publicKey: keys.publicKey
+        })
     })
 }
 

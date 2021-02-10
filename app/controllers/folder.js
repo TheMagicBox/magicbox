@@ -142,33 +142,31 @@ const shareFolder = (req, res) => {
                     folderId: folder._id
                 }
 
-                return sign(origin).then(signature => {
-                    const options = {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            name: path.basename(folder.path),
-                            origin: origin,
-                            signature: signature.toString('base64')
-                        })
-                    }
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: path.basename(folder.path),
+                        origin: origin,
+                        signature: sign(origin).toString('base64')
+                    })
+                }
 
-                    return fetch(`${magicbox.url}/api/folders/share`, options)
-                    .then(response => {
-                        if (response.ok) {
-                            return response
-                        }
-                        throw response
-                    })
-                    .then(response => response.json())
-                    .then(response => {
-                        return {
-                            magicbox: magicbox._id,
-                            folderId: response.folderId
-                        }
-                    })
+                return fetch(`${magicbox.url}/api/folders/share`, options)
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    }
+                    throw response
+                })
+                .then(response => response.json())
+                .then(response => {
+                    return {
+                        magicbox: magicbox._id,
+                        folderId: response.folderId
+                    }
                 })
             })
 
