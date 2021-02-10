@@ -2,7 +2,7 @@ const crypto = require('crypto')
 const db = require('../models')
 const keys = require('../keys')
 
-const sign = async data => {
+const sign = data => {
     const sign = crypto.createSign('sha256')
     sign.write(Buffer.from(JSON.stringify(data)))
     sign.end()
