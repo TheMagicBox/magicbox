@@ -35,7 +35,7 @@ const addMagicBox = (req, res) => {
     const url = req.body.url
     const account = req.body.account
 
-    if (!name || !url) {
+    if (!name || !url || !account) {
         return res.status(400).send('Missing parameters: name, url, account.')
     }
 
