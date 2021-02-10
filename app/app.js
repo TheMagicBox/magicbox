@@ -1,9 +1,9 @@
 require('dotenv').config()
 const fs = require('fs')
 const path = require('path')
-const app = require('express')()
-const server = require('http').createServer(app)
-const io = require('socket.io')(server)
+const http = require('http')
+const io = require('socket.io')
+const express = require('express')
 const bodyParser = require('body-parser')
 const db = require('./models')
 const { initializeDatabase } = require('./initdb')
@@ -33,11 +33,15 @@ db.mongoose.connect(url, {
     }
     initializeDatabase()
 
-    require('./io/server')(io)
+    const app = express()
+    const httpServer = http.createServer(app)
+    const ioServer = io(httpServer)
+
+    require('./io/server')(ioServer)
     app.use(bodyParser.urlencoded({ extended: true }))
     app.use(bodyParser.json())
     app.use('/api', require('./routes/api'))
-    server.listen(process.env.SERVER_PORT, () => {
+    httpServer.listen(process.env.SERVER_PORT, () => {
         console.log(`Listening at http://localhost:${process.env.SERVER_PORT}`)
     })
 })
