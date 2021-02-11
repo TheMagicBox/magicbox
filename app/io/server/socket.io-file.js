@@ -4,50 +4,25 @@ const { nanoid } = require('nanoid')
 
 const CHUNK_SIZE = 500000
 
-const createDirIfNotExistsRecursive = directory => {
-    if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, { recursive: true })
-    }
-}
-
-const mergeFileParts = (directory, destination) => {
-    const files = fs.readdirSync(directory)
-    const stream = fs.createWriteStream(destination)
-
-    files.map(str => parseInt(str))
-        .sort((a, b) => a - b)
-        .forEach(filename => {
-            const filepath = path.join(directory, filename.toString())
-            stream.write(fs.readFileSync(filepath))
-            fs.unlinkSync(filepath)
-        })
-
-    fs.rmdirSync(directory)
-    stream.close()
-}
-
 const receiveFile = (socket, key, destination, callback) => {
+    if (!fs.existsSync(destination)) {
+        fs.mkdirSync(destination, { recursive: true })
+    }
+
+    const fid = `.${nanoid(10)}`
+    const tmp = path.join(destination, fid)
+    const stream = fs.createWriteStream(tmp)
+
     socket.on(key, part => {
-        const directory = `.tmp/${part.id}`
-        createDirIfNotExistsRecursive(directory)
-
         if (part.metadata) {
-            const filepath = path.join(destination, part.metadata.filename)
-            createDirIfNotExistsRecursive(destination)
-            mergeFileParts(directory, filepath)
+            stream.close()
+            fs.renameSync(tmp, path.join(destination, part.metadata.filename))
             socket.emit(`${key}:${part.id}:end`)
-            return callback(null, part.metadata)
+            callback(null, part.metadata)
+        } else {
+            stream.write(part.chunk)
+            socket.emit(`${key}:${part.id}:next`)
         }
-
-        const filepath = path.join(directory, part.i.toString())
-        fs.writeFile(filepath, part.chunk, err => {
-            if (err) {
-                socket.emit(`${key}:${part.id}:abort`)
-                return callback(err)
-            }
-        })
-
-        socket.emit(`${key}:${part.id}:next`)
     })
 }
 
@@ -61,7 +36,6 @@ const sendFile = (socket, key, filepath, metadata, onProgress, onDone, onCancele
     const fd = fs.openSync(filepath)
     let bytesRead = 0
     let bytesSent = 0
-    let i = 0
 
     const removeAllListeners = () => {
         socket.removeAllListeners(onNextKey)
@@ -73,7 +47,7 @@ const sendFile = (socket, key, filepath, metadata, onProgress, onDone, onCancele
         bytesRead = fs.readSync(fd, buffer, 0, CHUNK_SIZE, null)
         bytesSent += bytesRead
         if (bytesRead > 0) {
-            socket.emit(key, { id, chunk: buffer.slice(0, bytesRead), i: i++ })
+            socket.emit(key, { id, chunk: buffer.slice(0, bytesRead) })
             onProgress(bytesSent, filesize)
         } else {
             socket.emit(key, { id, metadata })
