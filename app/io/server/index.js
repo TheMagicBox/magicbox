@@ -1,3 +1,4 @@
+const fs = require('fs')
 const path = require('path')
 const { nanoid } = require('nanoid')
 const ioClient = require('socket.io-client')
@@ -24,10 +25,13 @@ const helper = {
 }
 
 const shareFile = (socket, folder, filepath) => {
+    const filesize = fs.statSync(filepath).size
     const progress = folder.sharedWith.map(recipient => {
         return {
             magicbox: recipient.magicbox._id,
-            status: 0
+            status: 0,
+            total: filesize,
+            sent: 0
         }
     })
 
@@ -42,14 +46,24 @@ const shareFile = (socket, folder, filepath) => {
                 }
 
                 const { keyOn, keyOff } = result.data
-                client.on(keyOn, result => {
+                siof(client).emit(keyOn, filepath, {
+                    filename: path.basename(filepath)
+                }, (sent, total) => {
+                    progress[index].sent = sent
+                    socket.emit('share', helper.success(progress))
+                }, () => {
+                    console.log('file sent')
                     progress[index].status = 1
                     socket.emit('share', helper.success(progress))
                     client.removeAllListeners(keyOn)
                     client.close()
-                })
-                siof(client).emit(keyOn, filepath, {
-                    filename: path.basename(filepath)
+                }, () => {
+                    console.log('transfer canceled')
+                    progress[index].status = -2
+                    socket.emit('share', helper.success(progress))
+                    client.emit(keyOff)
+                    client.removeAllListeners(keyOn)
+                    client.close()
                 })
             })
             client.emit('upload', folderId)
@@ -95,7 +109,6 @@ module.exports = io => {
                 const keyOff = `${keyOn}-off`
                 const destination = path.join(STORAGE, folder.path)
                 siof(socket).on(keyOn, destination, (err, metadata) => {
-                    socket.emit(keyOn, helper.success())
                     socket.removeAllListeners(keyOn)
                     socket.removeAllListeners(keyOff)
 

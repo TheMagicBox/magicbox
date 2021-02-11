@@ -81,7 +81,8 @@ const registerMagicBox = (req, res) => {
         return res.status(400).send('Missing parameters: name.')
     }
 
-    ngrok.connect(process.env.SERVER_PORT)
+    // ngrok.connect(process.env.SERVER_PORT)
+    Promise.resolve('http://00652ee37a52.ngrok.io')
     .then(url => {
         new MagicBox({
             name,
