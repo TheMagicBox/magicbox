@@ -25,13 +25,11 @@ const helper = {
 }
 
 const shareFile = (socket, folder, filepath) => {
-    const filesize = fs.statSync(filepath).size
     const progress = folder.sharedWith.map(recipient => {
         return {
             magicbox: recipient.magicbox._id,
-            status: 0,
-            total: filesize,
-            sent: 0
+            progress: 0,
+            status: 0
         }
     })
 
@@ -49,17 +47,15 @@ const shareFile = (socket, folder, filepath) => {
                 siof(client).emit(keyOn, filepath, {
                     filename: path.basename(filepath)
                 }, (sent, total) => {
-                    progress[index].sent = sent
+                    progress[index].progress = Math.floor(100 * sent / total)
                     socket.emit('share', helper.success(progress))
                 }, () => {
-                    console.log('file sent')
                     progress[index].status = 1
                     socket.emit('share', helper.success(progress))
                     client.removeAllListeners(keyOn)
                     client.close()
                 }, () => {
-                    console.log('transfer canceled')
-                    progress[index].status = -2
+                    progress[index].status = -1
                     socket.emit('share', helper.success(progress))
                     client.emit(keyOff)
                     client.removeAllListeners(keyOn)
@@ -67,9 +63,6 @@ const shareFile = (socket, folder, filepath) => {
                 })
             })
             client.emit('upload', folderId)
-        })
-        client.on('disconnect', () => {
-            console.log(`Disconnected from ${magicbox.name}.`);
         })
     })
 }

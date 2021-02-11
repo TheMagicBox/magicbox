@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const { nanoid } = require('nanoid')
 
-const CHUNK_SIZE = 1 << 16
+const CHUNK_SIZE = 500000
 
 const createDirIfNotExistsRecursive = directory => {
     if (!fs.existsSync(directory)) {
