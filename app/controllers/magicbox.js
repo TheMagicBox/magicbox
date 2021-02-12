@@ -1,4 +1,4 @@
-const ngrok = require('ngrok')
+const localtunnel = require('localtunnel')
 const fetch = require('node-fetch')
 const db = require('../models')
 
@@ -81,25 +81,30 @@ const registerMagicBox = (req, res) => {
         return res.status(400).send('Missing parameters: name.')
     }
 
-    ngrok.connect(process.env.SERVER_PORT)
-    .then(url => {
-        new MagicBox({
-            name,
-            url,
-            default: true
-        }).save((err, magicbox) => {
-            if (err) {
-                return res.status(500).end()
-            }
+    try {
+        localtunnel({
+            port: process.env.SERVER_PORT,
+            host: process.env.MAGICBOX_SERVER,
+            subdomain: name,
+        }).then(tunnel => {
+            new MagicBox({
+                name,
+                url: tunnel.url,
+                tunnelToken: tunnel.token,
+                default: true
+            }).save((err, magicbox) => {
+                if (err) {
+                    return res.status(500).end()
+                }
 
-            const box = magicbox.toJSON()
-            delete box.default
-            res.json(box)
+                const box = magicbox.toJSON()
+                delete box.default
+                res.json(box)
+            })
         })
-    })
-    .catch(err => {
-        return res.status(500).send(err)
-    })
+    } catch (err) {
+        return res.status(500).send('Could not create tunnel. Try another name.')
+    }
 }
 
 module.exports = {

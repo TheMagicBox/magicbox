@@ -7,6 +7,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const db = require('./models')
 const { initializeDatabase } = require('./initdb')
+const { createTunnelIfRegistered } = require('./tunnel')
 const STORAGE = path.join(process.cwd(), process.env.STORAGE_DIRECTORY)
 
 const mongoHost = process.env.MONGO_HOST
@@ -32,6 +33,7 @@ db.mongoose.connect(url, {
         fs.mkdirSync(STORAGE, { recursive: true })
     }
     initializeDatabase()
+    createTunnelIfRegistered()
 
     const app = express()
     const httpServer = http.createServer(app)

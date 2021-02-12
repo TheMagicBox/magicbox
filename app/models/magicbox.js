@@ -11,6 +11,7 @@ const MagicBox = mongoose.model(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         },
+        tunnelToken: String,
         publicKey: String,
         default: Boolean
     }, { toJSON })
