@@ -16,7 +16,7 @@ const doc = (() => {
             ['GET', '/api/folders', '', 'User', 'Get folders list.'],
             ['POST', '/api/folders', 'name: String', 'User', 'Create a new folder.'],
             ['GET', '/api/folders/:folderId', '', 'User', 'Get folder content.'],
-            ['POST', '/api/folders/share', 'name: String, origin: {url: String, account: String, folderId: String}, signature: String', 'None', 'Request the creation of a shared folder.'],
+            ['POST', '/api/folders/share', 'name: String, folderId: String', 'MagicBox Signature', 'Request the creation of a shared folder.'],
             ['PUT', '/api/folders/share/:folderId', 'magicboxIds: [String]', 'User', 'Share a folder.']
         ]
     )

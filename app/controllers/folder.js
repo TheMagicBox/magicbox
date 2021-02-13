@@ -67,6 +67,7 @@ const createFolder = (req, res) => {
 
 const createFolderForSharing = (req, res) => {
     const name = req.body.name
+    const folderId = req.body.folderId
 
     if (!name) {
         return res.status(400).send('Missing parameters: name.')
@@ -84,7 +85,7 @@ const createFolderForSharing = (req, res) => {
         owner: req.magicbox.addedBy.id,
         sharedWith: [{
             magicbox: req.magicbox.id,
-            folderId: req.payload.folderId
+            folderId
         }]
     }).save((err, folder) => {
         if (err) {
@@ -123,12 +124,12 @@ const shareFolder = (req, res) => {
                         'Content-Type': 'application/json',
                         'x-signature-token': genSignToken({
                             url: req.user.magicbox.url,
-                            account: req.user.id,
-                            folderId: folder._id
+                            account: req.user.id
                         })
                     },
                     body: JSON.stringify({
-                        name: path.basename(folder.path)
+                        name: path.basename(folder.path),
+                        folderId: folder._id
                     })
                 }
 
