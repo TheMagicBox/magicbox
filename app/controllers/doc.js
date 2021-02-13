@@ -10,12 +10,12 @@ const doc = (() => {
             ['GET', '/api/users', '', 'User', 'Get User details.'],
             ['GET', '/api/users/:username', '', 'None', 'Get User information by account name.'],
             ['GET', '/api/magicbox', '', 'User', 'Get MagicBox details.'],
-            ['GET', '/api/magicbox/contacts', '', 'User', 'Get MagicBox contacts.'],
             ['POST', '/api/magicbox', 'name: String, url: String, account: String', 'User', 'Add a MagicBox contact.'],
+            ['GET', '/api/magicbox/contacts', '', 'User', 'Get MagicBox contacts.'],
             ['POST', '/api/magicbox/register', 'name: String', 'Admin', 'Register MagicBox for a public url.'],
             ['GET', '/api/folders', '', 'User', 'Get folders list.'],
-            ['GET', '/api/folders/:folderId', '', 'User', 'Get folder content.'],
             ['POST', '/api/folders', 'name: String', 'User', 'Create a new folder.'],
+            ['GET', '/api/folders/:folderId', '', 'User', 'Get folder content.'],
             ['POST', '/api/folders/share', 'name: String, origin: {url: String, account: String, folderId: String}, signature: String', 'None', 'Request the creation of a shared folder.'],
             ['PUT', '/api/folders/share/:folderId', 'magicboxIds: [String]', 'User', 'Share a folder.']
         ]
