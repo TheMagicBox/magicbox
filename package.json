@@ -20,13 +20,13 @@
         "jsonwebtoken": "^8.5.1",
         "localtunnel": "git+https://github.com/TheMagicBox/localtunnel.git",
         "mongodb": "^3.6.4",
-        "mongoose": "^5.11.15",
+        "mongoose": "^5.11.16",
         "nanoid": "^3.1.20",
         "node-fetch": "^2.6.1",
         "nodemon": "^2.0.7",
         "path": "^0.12.7",
         "prettytable": "^0.3.1",
-        "socket.io": "^3.0.5",
-        "socket.io-client": "^3.0.5"
+        "socket.io": "^3.1.1",
+        "socket.io-client": "^3.1.1"
     }
 }
