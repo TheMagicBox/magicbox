@@ -28,7 +28,7 @@ if ([publicKeyFilepath, privateKeyFilepath, jwtSecretFilepath].every(f => fs.exi
         }
     })
 
-    const secret = crypto.randomBytes(32).toString('hex')
+    const secret = crypto.randomBytes(256).toString('hex')
 
     if (!fs.existsSync(keysDirectory)) {
         fs.mkdirSync(keysDirectory)
