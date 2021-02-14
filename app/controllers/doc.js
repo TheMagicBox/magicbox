@@ -5,6 +5,7 @@ const doc = (() => {
         ['Method', 'Path', 'Parameters', 'Authentication', 'Description'],
         [
             ['GET', '/api', '', 'None', 'Get the API documentation.'],
+            ['GET', '/api/cert', '', 'None', 'Get the MagicBox public key.'],
             ['POST', '/api/auth/signup', 'username: String, password: String', 'Admin', 'Create an account.'],
             ['POST', '/api/auth/signin', 'username: String, password: String', 'None', 'Sign in to an account.'],
             ['GET', '/api/users', '', 'User', 'Get User details.'],
